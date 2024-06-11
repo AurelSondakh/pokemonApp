@@ -1,21 +1,39 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+export const loadFavorites = createAsyncThunk('favorites/loadFavorites', async () => {
+  const favorites = await AsyncStorage.getItem('favorites');
+  return favorites ? JSON.parse(favorites) : [];
+});
+
+export const toggleFavorite = createAsyncThunk('favorites/toggleFavorite', async (pokemon, { getState }) => {
+  const state = getState();
+  let favorites = [...state.favorites];
+  const index = favorites.findIndex(fav => fav.name === pokemon.name);
+
+  if (index >= 0) {
+    favorites.splice(index, 1);
+  } else {
+    favorites.push(pokemon);
+  }
+
+  await AsyncStorage.setItem('favorites', JSON.stringify(favorites));
+  return favorites;
+});
 
 const favoritesSlice = createSlice({
   name: 'favorites',
   initialState: [],
-  reducers: {
-    toggleFavorite: (state, action) => {
-      const pokemon = action.payload;
-      console.log(pokemon, 'POKEMON')
-      const existingIndex = state.findIndex(item => item.name === pokemon.name);
-      if (existingIndex >= 0) {
-        return state.filter(item => item.name !== pokemon.name);
-      } else {
-        state.push(pokemon);
-      }
-    }
-  }
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(loadFavorites.fulfilled, (state, action) => {
+        return action.payload;
+      })
+      .addCase(toggleFavorite.fulfilled, (state, action) => {
+        return action.payload;
+      });
+  },
 });
 
-export const { toggleFavorite } = favoritesSlice.actions;
 export default favoritesSlice.reducer;

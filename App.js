@@ -1,12 +1,17 @@
 import React, { useEffect } from 'react';
 import { LogBox } from 'react-native';
-import { Provider } from 'react-redux'
+import { Provider, useDispatch } from 'react-redux'
 import { configureStore } from '@reduxjs/toolkit'
 import rootReducer from './App/Redux/Reducers/index.js';
 import AppNavigator from './App/Router/AppNavigator';
 import SplashScreen from 'react-native-splash-screen';
+import { loadFavorites } from './App/Redux/Reducers/Favorites.js';
 
 const App = () => {
+
+  useEffect(() => {
+    store.dispatch(loadFavorites());
+  }, []);
 
   const customizedMiddleware = (getDefaultMiddleware) => getDefaultMiddleware({
     immutableCheck: false,
