@@ -1,10 +1,10 @@
-import { URL_POKEMON } from "../../../Configs/GlobalUrl";
+import { URL_POKEMON_SPECIES } from "../../../Configs/GlobalUrl";
 import * as ActionTypes from '../../Constants/Types';
 
-export const GetAllPokemon = () => {
+export const GetPokemonSpecies = (pokemonId) => {
     return async (dispatch) => {
         dispatch({
-            type: ActionTypes.GET_ALL_POKEMON_REQUEST
+            type: ActionTypes.GET_POKEMON_SPECIES_REQUEST
         });
         const controller = new AbortController();
         const { signal } = controller;
@@ -12,7 +12,7 @@ export const GetAllPokemon = () => {
             controller.abort();
         }, 8000);
         try {
-            const response = await fetch(`${URL_POKEMON}`, {
+            const response = await fetch(`${URL_POKEMON_SPECIES}/${pokemonId}`, {
                 method: "GET",
                 redirect: "follow",
                 signal
@@ -23,7 +23,7 @@ export const GetAllPokemon = () => {
 
             if (!response.ok) {
                 dispatch({
-                    type: ActionTypes.GET_ALL_POKEMON_FAILED,
+                    type: ActionTypes.GET_POKEMON_SPECIES_FAILED,
                     payload: responseData
                 });
             }
@@ -31,13 +31,13 @@ export const GetAllPokemon = () => {
             const responseData = await response.json();
 
             dispatch({
-                type: ActionTypes.GET_ALL_POKEMON_SUCCESS,
+                type: ActionTypes.GET_POKEMON_SPECIES_SUCCESS,
                 payload: responseData
             });
         } catch (error) {
             console.error("ERROR", error.message);
             dispatch({
-                type: ActionTypes.GET_ALL_POKEMON_FAILED,
+                type: ActionTypes.GET_POKEMON_SPECIES_FAILED,
                 error: error.message,
             });
         }
