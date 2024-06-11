@@ -1,8 +1,10 @@
 import {combineReducers} from "redux"
 import { PokemonReducer } from "./Pokemon";
+import favoritesReducer from './Favorites';
 
 const rootReducer = combineReducers({
-    pokemon: PokemonReducer
+    pokemon: PokemonReducer,
+    favorites: favoritesReducer
 });
 
 

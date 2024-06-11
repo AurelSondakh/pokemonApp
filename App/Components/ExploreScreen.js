@@ -36,7 +36,6 @@ const ExploreScreen = () => {
                 data={pokemonList?.results}
                 renderItem={({ index, item }) => <PokemonList item={item} index={index} />}
                 keyExtractor={(item) => `${item.name}`}
-                testID="contact-list"
             />
             }
             <Spinner

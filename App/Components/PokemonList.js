@@ -3,22 +3,29 @@ import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { useNavigation } from "@react-navigation/native";
 
-const PokemonList = ({ item, index }) => {
+const PokemonList = ({ item }) => {
     const navigation = useNavigation()
 
     const capitalizeFirstLetter = (str) => {
         return str.replace(/\b\w/g, (char) => char.toUpperCase());
     };
 
+    const extractIdFromUrl = (url) => {
+        const id = url.split('/').filter(Boolean).pop();
+        return id;
+    };
+
+    const pokemonId = extractIdFromUrl(item.url);
+
     return (
         <TouchableOpacity
             style={styles.pokemonContainer}
-            onPress={() => navigation.navigate('PokemonDetailPage', { item, index })}
+            onPress={() => navigation.navigate('PokemonDetailPage', { item, pokemonId })}
         >
             <View style={styles.row}>
                 <View>
                     <Image
-                        source={{ uri: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${index + 1}.png` }}
+                        source={{ uri: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonId}.png` }}
                         style={styles.image}
                     />
                 </View>

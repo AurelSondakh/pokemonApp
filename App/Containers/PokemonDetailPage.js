@@ -9,15 +9,17 @@ import ErrorModal from "../Components/ErrorModal";
 import { ActionPokemon } from "../Redux/Actions/Pokemon";
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
+import { toggleFavorite } from "../Redux/Reducers/Favorites";
 
 const width = Dimensions.get('screen').width
 
 const PokemonDetailPage = (props) => {
     const navigation = useNavigation()
     const item = props?.route?.params?.item
-    const index = props?.route?.params?.index
+    const index = props?.route?.params?.pokemonId
     const dispatch = useDispatch();
     const { pokemonSpecies, pokemonDetail, pokemonSpinner, errorModal } = useSelector((state) => state.pokemon);
+    const favorites = useSelector((state) => state.favorites);
 
     const capitalizeFirstLetter = (str) => {
         return str.replace(/\b\w/g, (char) => char.toUpperCase());
@@ -25,12 +27,19 @@ const PokemonDetailPage = (props) => {
 
     const getPokemonSpecies = () => {
         try {
-            dispatch(ActionPokemon.GetPokemonSpecies(index + 1));
-            dispatch(ActionPokemon.GetPokemonDetail(index + 1));
+            dispatch(ActionPokemon.GetPokemonSpecies(index));
+            dispatch(ActionPokemon.GetPokemonDetail(index));
         } catch (error) {
             console.log('Error Get Pokemon Species: ', error);
         }
     }
+
+    const handleFavoritePress = () => {
+        dispatch(toggleFavorite(item));
+    };
+    const isFavorite = favorites.some(fav => fav.name === item.name);
+
+    console.log(pokemonDetail)
 
     useEffect(() => {
         getPokemonSpecies()
@@ -52,22 +61,22 @@ const PokemonDetailPage = (props) => {
                 <TouchableOpacity onPress={() => navigation.goBack()}>
                     <MaterialIcons name={'chevron-left'} size={28} color={'#FFF'} />
                 </TouchableOpacity>
-                <TouchableOpacity>
-                    <MaterialIcons name={'favorite-outline'} size={28} color={'#FFF'} />
+                <TouchableOpacity onPress={handleFavoritePress}>
+                    <MaterialIcons name={isFavorite ? 'favorite' : 'favorite-outline'} size={28} color={'#FFF'} />
                 </TouchableOpacity>
             </View>
             <View style={{ marginTop: -200, alignItems: 'center' }}>
                 <Image
-                    source={{ uri: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${index + 1}.png` }}
+                    source={{ uri: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${index}.png` }}
                     style={{ width: 250, height: 250, borderRadius: 25 }}
                 />
             </View>
             <View style={{ marginHorizontal: 20 }}>
                 <Text style={{ fontFamily: 'Poppins-SemiBold', color: '#000', fontSize: 24 }}>{capitalizeFirstLetter(item?.name)}</Text>
-                {pokemonSpecies && pokemonSpecies?.genera &&
-                    (errorModal)
+                {(errorModal)
                     ? <ErrorModal method={getPokemonSpecies} />
-                    : <>
+                    : pokemonSpecies && pokemonSpecies?.genera &&
+                    <>
                         <Text style={{ fontFamily: 'Poppins-Regular', fontSize: 16, marginTop: -10 }}>{pokemonSpecies?.genera[7]?.genus}</Text>
                         <View style={{ flexDirection: 'row', marginVertical: 25 }}>
                             {pokemonDetail?.types?.map((item, index) => {

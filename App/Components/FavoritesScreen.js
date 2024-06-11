@@ -1,12 +1,22 @@
-import React from "react";
-import { View, Text } from 'react-native'
+import React from 'react';
+import { View, Text, FlatList } from 'react-native';
+import { useSelector } from 'react-redux';
+import PokemonList from './PokemonList';
 
 const FavoritesScreen = () => {
-    return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>Favorites Screen</Text>
-        </View>
-    );
-}
+  const favorites = useSelector((state) => state.favorites);
+
+  return (
+    <View>
+      <FlatList
+        style={{ marginTop: 15, marginHorizontal: 15 }}
+        nestedScrollEnabled
+        data={favorites}
+        renderItem={({ index, item }) => <PokemonList item={item} index={index} />}
+        keyExtractor={(item) => `${item.name}`}
+      />
+    </View>
+  );
+};
 
 export default FavoritesScreen;
